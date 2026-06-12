@@ -1,0 +1,424 @@
+#multi-upload-panel {
+    margin: 20px auto;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+@media (min-width: 1200px) {
+    #multi-upload-panel { max-width: 1160px; }
+}
+
+#multi-upload-panel h3 {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+#mu-dropzone {
+    border: 2px dashed #ccc;
+    border-radius: 4px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+#mu-dropzone:hover {
+    border-color: #467B96;
+    background: #f5f9fc;
+}
+
+#mu-dropzone.dragover {
+    border-color: #467B96;
+    background: #e8f4f8;
+}
+
+#mu-dropzone p {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+}
+
+#mu-gallery {
+    margin-top: 15px;
+    min-height: 100px;
+}
+
+.mu-group {
+    margin-bottom: 20px;
+}
+
+.mu-group-title {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.mu-group-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.mu-item {
+    position: relative;
+    aspect-ratio: 1;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mu-item:hover {
+    border-color: #467B96;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.mu-item.selected {
+    border-color: #467B96;
+    box-shadow: 0 0 0 2px #467B96;
+}
+
+.mu-item.mu-done {
+    border-color: #4caf50;
+}
+
+.mu-item.mu-failed {
+    border-color: #f44336;
+}
+
+.mu-item.mu-inserted {
+    border-color: #ff9800;
+}
+
+.mu-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 文件图标样式（视频/音频/文档等非图片） */
+.mu-item .mu-file-icon {
+    width: 100%;
+    height: 60%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    background: #f5f5f5;
+}
+
+.mu-item .mu-file-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 10px);
+    font-size: 10px;
+    color: #666;
+    background: rgba(255,255,255,0.9);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.mu-item .mu-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #467B96;
+    transform-origin: left;
+    transition: transform 0.3s;
+}
+
+.mu-item .mu-check {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #ccc;
+    display: none;
+}
+
+.mu-item.selected .mu-check {
+    display: block;
+    background: #467B96;
+    border-color: #467B96;
+}
+
+.mu-item.selected .mu-check::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.mu-item .mu-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.mu-item:hover .mu-name {
+    opacity: 1;
+}
+
+.mu-item .mu-remove {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255,0,0,0.7);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.mu-item.mu-done:hover .mu-remove {
+    display: flex;
+}
+
+.mu-item .mu-remove:hover {
+    background: #f00;
+}
+
+/* 已插入标记 */
+.mu-item .mu-inserted-badge {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ff9800;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.mu-empty {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-size: 13px;
+}
+
+#mu-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+#mu-toolbar label {
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#mu-insert-btn {
+    padding: 8px 20px;
+    background: #467B96;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+#mu-insert-btn:hover {
+    background: #3a6a82;
+}
+
+#mu-insert-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+#mu-count {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 失败提示横幅 */
+#mu-fail-notice {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    color: #856404;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* ===== 磁吸调试面板 ===== */
+.mu-debug-dock {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.mu-debug-badge {
+    background: #ff4757;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+    transition: all .3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mu-debug-badge:hover {
+    background: #ff3838;
+    transform: scale(1.05);
+}
+
+.mu-debug-badge .dot {
+    width: 8px;
+    height: 8px;
+    background: #2ed573;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.mu-debug-panel {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 500px;
+    max-height: 400px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+}
+
+.mu-debug-panel.active {
+    display: flex;
+}
+
+.mu-debug-header {
+    padding: 10px 15px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mu-debug-header h4 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.mu-debug-header .close {
+    cursor: pointer;
+    padding: 4px;
+    color: #999;
+}
+
+.mu-debug-header .close:hover {
+    color: #fff;
+}
+
+.mu-debug-header .copy {
+    cursor: pointer;
+    padding: 4px;
+    color: #999;
+    font-size: 14px;
+    user-select: none;
+}
+
+.mu-debug-header .copy:hover {
+    color: #4ec9b0;
+}
+
+.mu-debug-body {
+    padding: 10px 15px;
+    overflow-y: auto;
+    flex: 1;
+    max-height: 300px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.mu-debug-footer {
+    padding: 8px 15px;
+    background: #2d2d2d;
+    border-top: 1px solid #3d3d3d;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #999;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .mu-group-items {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    #mu-toolbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
