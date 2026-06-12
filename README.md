@@ -42,7 +42,7 @@ AttachPlus2 是为 Typecho 博客系统打造的**多文件批量上传与管理
 
 ```bash
 cd /path/to/typecho/usr/plugins/
-git clone https://github.com/your-repo/AttachPlus2.git AttachPlus2
+git clone https://github.com/zizdog/AttachPlus2.git AttachPlus2
 ```
 
 然后进入后台启用即可。
@@ -242,6 +242,3 @@ AttachPlus2 是 Typecho 生态中少见的**原生级附件增强方案**。它�
 
 如果你希望 Typecho 的写作体验更贴近现代 CMS，AttachPlus2 值得一试。
 
----
-
-*文章生成于 AttachPlus2 插件介绍需求。*
