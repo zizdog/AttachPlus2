@@ -21,7 +21,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) {
  * 
  * @package AttachPlus2
  * @author zizdog
- * @version 2.0.0
+ * @version 2.0.1
  * @link https://zizdog.com
  */
 class Plugin implements PluginInterface
@@ -246,7 +246,7 @@ class Plugin implements PluginInterface
         
         $dropHint = $multiFormat 
             ? '支持图片/视频/音频/文档/压缩包等，最多 ' . $maxFiles . ' 个，单张 ≤ ' . intval($maxSize/1024/1024) . 'MB'
-            : '支持 JPG/PNG/GIF/WebP，最多 ' . $maxFiles . ' 张，单张 ≤ ' . intval($maxSize/1024/1024) . 'MB';
+            : '支持 JPG/PNG/GIF/WebP/AVIF，最多 ' . $maxFiles . ' 张，单张 ≤ ' . intval($maxSize/1024/1024) . 'MB';
         $accept = $multiFormat ? '*/*' : 'image/*';
         ?>
 

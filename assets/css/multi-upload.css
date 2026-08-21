@@ -1,13 +1,12 @@
-#multi-upload-panel {
+ #multi-upload-panel{
     margin: 20px auto;
     padding: 15px;
     background: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
-
-@media (min-width: 1200px) {
-    #multi-upload-panel { max-width: 1160px; }
+@media (min-width: 1200px){
+    #multi-upload-panel{max-width: 1160px;}
 }
 
 #multi-upload-panel h3 {
@@ -183,11 +182,30 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.2s;
 }
 
-.mu-item:hover .mu-name {
+/* hover 时用「点击选择」遮罩盖住文件名（仅已上传完成的附件） */
+.mu-item::after {
+    content: '点击选择';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    background: rgba(70,123,150,0.92);
+    color: #fff;
+    font-size: 11px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+.mu-item.mu-done:hover::after {
     opacity: 1;
 }
 
@@ -296,6 +314,71 @@
     font-weight: bold;
 }
 
+
+/* ===== 磁吸调试面板 ===== */
+.mu-debug-dock {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.mu-debug-badge {
+    background: #ff4757;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
+    transition: all .3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mu-debug-badge:hover {
+    background: #ff3838;
+    transform: scale(1.05);
+}
+
+.mu-debug-badge .dot {
+    width: 8px;
+    height: 8px;
+    background: #2ed573;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.mu-debug-panel {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 500px;
+    max-height: 400px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+}
+
+.mu-debug-panel.active {
+    display: flex;
+}
+
+.mu-debug-header {
+    padding: 10px 15px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #3d3d3d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 /* ===== 磁吸调试面板 ===== */
 .mu-debug-dock {
     position: fixed;
@@ -348,10 +431,11 @@
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
     overflow: hidden;
-    display: none;
+    display: none;  /* 默认隐藏 */
     flex-direction: column;
 }
 
+/* ===== 关键：active 类控制显示 ===== */
 .mu-debug-panel.active {
     display: flex;
 }

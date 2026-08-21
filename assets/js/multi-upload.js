@@ -312,7 +312,9 @@
             if (multiFormat) {
                 return true; // 多格式模式接受所有文件
             }
-            return f.type.match(/^image\//);
+            // 部分浏览器对 avif 等新格式返回空 MIME，用扩展名兜底
+            var ext = (f.name.split('.').pop() || '').toLowerCase();
+            return f.type.match(/^image\//) || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].indexOf(ext) > -1;
         });
         log('info', '选择文件', { total: files.length, valid: validFiles.length });
         if (validFiles.length === 0) {
@@ -474,7 +476,9 @@
         var el = document.createElement('div');
         el.className = 'mu-item';
         
-        var isImage = file.type.match(/^image\//);
+        // 部分浏览器对 avif 等新格式返回空 MIME，用扩展名兜底
+        var ext = (file.name.split('.').pop() || '').toLowerCase();
+        var isImage = file.type.match(/^image\//) || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].indexOf(ext) > -1;
         var isVideo = file.type.match(/^video\//);
         var isAudio = file.type.match(/^audio\//);
         var fileType = isImage ? 'image' : (isVideo ? 'video' : (isAudio ? 'audio' : 'other'));

@@ -110,7 +110,7 @@ class AttachPlus2_Action extends Typecho_Widget
         if ($multiFormat) {
             // 多格式模式：接受所有常见类型
             $allowed = [
-                'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+                'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/svg+xml',
                 'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime',
                 'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/webm',
                 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -122,7 +122,7 @@ class AttachPlus2_Action extends Typecho_Widget
             ];
         } else {
             // 图片模式
-            $allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            $allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
         }
         
         if (!in_array($file['type'], $allowed)) {
@@ -175,9 +175,9 @@ class AttachPlus2_Action extends Typecho_Widget
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         
         if ($multiFormat) {
-            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'mp4', 'webm', 'ogv', 'mov', 'mp3', 'wav', 'ogg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7z', 'txt', 'md', 'html', 'css', 'js', 'json', 'xml'];
+            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg', 'mp4', 'webm', 'ogv', 'mov', 'mp3', 'wav', 'ogg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7z', 'txt', 'md', 'html', 'css', 'js', 'json', 'xml'];
         } else {
-            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            $allowedExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
         }
         
         if (!in_array($ext, $allowedExts)) {
@@ -206,7 +206,7 @@ class AttachPlus2_Action extends Typecho_Widget
         
         // 判断文件类型分类
         $uploadedType = 'other';
-        if (strpos($mime, 'image/') === 0 || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
+        if (strpos($mime, 'image/') === 0 || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'])) {
             $uploadedType = 'image';
         } elseif (strpos($mime, 'video/') === 0 || in_array($ext, ['mp4', 'webm', 'ogv', 'mov'])) {
             $uploadedType = 'video';
@@ -354,7 +354,7 @@ class AttachPlus2_Action extends Typecho_Widget
                 $ext = strtolower($meta['type'] ?? '');
                 $mime = strtolower($meta['mime'] ?? '');
                 $fileType = 'other';
-                if (strpos($mime, 'image/') === 0 || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'])) {
+                if (strpos($mime, 'image/') === 0 || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'])) {
                     $fileType = 'image';
                 } elseif (strpos($mime, 'video/') === 0 || in_array($ext, ['mp4', 'webm', 'ogv', 'mov'])) {
                     $fileType = 'video';
