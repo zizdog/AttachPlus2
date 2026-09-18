@@ -1,8 +1,19 @@
+/*
+ * 配色说明
+ * ------------------------------------------------------------------
+ * 面板 / 边框 / 文字 / 强调色统一引用 AdminDark 的调色板变量，
+ * 第二个参数是原值兜底：AdminDark 未启用 → 用原值，外观与以前完全一致；
+ * 深色档 → 自动跟随当前配色方案。
+ *
+ * 文件里那批 #2d2d2d / #1e1e1e / #d4d4d4 / #3d3d3d 是本身上就是深色的区域
+ * （代码预览 / 遮罩），两种模式都不用改，故意保留。
+ */
+
  #multi-upload-panel{
     margin: 20px auto;
     padding: 15px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    background: var(--ad-surface-2, #f9f9f9);
+    border: 1px solid var(--ad-line, #ddd);
     border-radius: 4px;
 }
 @media (min-width: 1200px){
@@ -12,32 +23,32 @@
 #multi-upload-panel h3 {
     margin: 0 0 15px 0;
     font-size: 14px;
-    color: #333;
+    color: var(--ad-fg, #333);
 }
 
 #mu-dropzone {
-    border: 2px dashed #ccc;
+    border: 2px dashed var(--ad-line, #ccc);
     border-radius: 4px;
     padding: 30px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
-    background: #fff;
+    background: var(--ad-surface, #fff);
 }
 
 #mu-dropzone:hover {
-    border-color: #467B96;
-    background: #f5f9fc;
+    border-color: var(--ad-accent, #467B96);
+    background: var(--ad-hi, #f5f9fc);
 }
 
 #mu-dropzone.dragover {
-    border-color: #467B96;
-    background: #e8f4f8;
+    border-color: var(--ad-accent, #467B96);
+    background: var(--ad-hi, #e8f4f8);
 }
 
 #mu-dropzone p {
     margin: 0;
-    color: #666;
+    color: var(--ad-fg-dim, #666);
     font-size: 13px;
 }
 
@@ -52,10 +63,10 @@
 
 .mu-group-title {
     font-size: 13px;
-    color: #666;
+    color: var(--ad-fg-dim, #666);
     margin-bottom: 10px;
     padding: 5px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--ad-line-soft, #eee);
 }
 
 .mu-group-items {
@@ -67,8 +78,8 @@
 .mu-item {
     position: relative;
     aspect-ratio: 1;
-    background: #fff;
-    border: 1px solid #e0e0e0;
+    background: var(--ad-surface, #fff);
+    border: 1px solid var(--ad-line, #e0e0e0);
     border-radius: 4px;
     overflow: hidden;
     cursor: pointer;
@@ -76,25 +87,25 @@
 }
 
 .mu-item:hover {
-    border-color: #467B96;
+    border-color: var(--ad-accent, #467B96);
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .mu-item.selected {
-    border-color: #467B96;
-    box-shadow: 0 0 0 2px #467B96;
+    border-color: var(--ad-accent, #467B96);
+    box-shadow: 0 0 0 2px var(--ad-accent, #467B96);
 }
 
 .mu-item.mu-done {
-    border-color: #4caf50;
+    border-color: var(--ad-ok, #4caf50);
 }
 
 .mu-item.mu-failed {
-    border-color: #f44336;
+    border-color: var(--ad-danger, #f44336);
 }
 
 .mu-item.mu-inserted {
-    border-color: #ff9800;
+    border-color: var(--ad-warn, #ff9800);
 }
 
 .mu-item img {
@@ -112,7 +123,7 @@
     align-items: center;
     justify-content: center;
     font-size: 36px;
-    background: #f5f5f5;
+    background: var(--ad-surface-2, #f5f5f5);
 }
 
 .mu-item .mu-file-label {
@@ -121,7 +132,7 @@
     left: 50%;
     transform: translate(-50%, 10px);
     font-size: 10px;
-    color: #666;
+    color: var(--ad-fg-dim, #666);
     background: rgba(255,255,255,0.9);
     padding: 2px 6px;
     border-radius: 2px;
@@ -135,7 +146,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: #467B96;
+    background: var(--ad-accent, #467B96);
     transform-origin: left;
     transition: transform 0.3s;
 }
@@ -147,15 +158,15 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #fff;
-    border: 2px solid #ccc;
+    background: var(--ad-surface, #fff);
+    border: 2px solid var(--ad-line, #ccc);
     display: none;
 }
 
 .mu-item.selected .mu-check {
     display: block;
-    background: #467B96;
-    border-color: #467B96;
+    background: var(--ad-accent, #467B96);
+    border-color: var(--ad-accent, #467B96);
 }
 
 .mu-item.selected .mu-check::after {
@@ -233,7 +244,7 @@
 }
 
 .mu-item .mu-remove:hover {
-    background: #f00;
+    background: var(--ad-danger, #f00);
 }
 
 /* 已插入标记 */
@@ -242,8 +253,8 @@
     top: 5px;
     left: 50%;
     transform: translateX(-50%);
-    background: #ff9800;
-    color: #fff;
+    background: var(--ad-warn, #ff9800);
+    color: var(--ad-on-accent, #fff);
     font-size: 10px;
     padding: 2px 8px;
     border-radius: 10px;
@@ -254,7 +265,7 @@
 .mu-empty {
     text-align: center;
     padding: 40px;
-    color: #999;
+    color: var(--ad-fg-faint, #999);
     font-size: 13px;
 }
 
@@ -264,12 +275,12 @@
     align-items: center;
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--ad-line-soft, #eee);
 }
 
 #mu-toolbar label {
     font-size: 13px;
-    color: #666;
+    color: var(--ad-fg-dim, #666);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -278,8 +289,8 @@
 
 #mu-insert-btn {
     padding: 8px 20px;
-    background: #467B96;
-    color: #fff;
+    background: var(--ad-accent, #467B96);
+    color: var(--ad-on-accent, #fff);
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -288,17 +299,17 @@
 }
 
 #mu-insert-btn:hover {
-    background: #3a6a82;
+    background: var(--ad-accent-press, #3a6a82);
 }
 
 #mu-insert-btn:disabled {
-    background: #ccc;
+    background: var(--ad-surface-3, #ccc);
     cursor: not-allowed;
 }
 
 #mu-count {
     font-size: 12px;
-    color: #999;
+    color: var(--ad-fg-faint, #999);
 }
 
 /* 失败提示横幅 */
@@ -306,10 +317,10 @@
     display: none;
     margin-top: 10px;
     padding: 10px 15px;
-    background: #fff3cd;
-    border: 1px solid #ffc107;
+    background: var(--ad-warn-bg, #fff3cd);
+    border: 1px solid var(--ad-warn-line, #ffc107);
     border-radius: 4px;
-    color: #856404;
+    color: var(--ad-warn, #856404);
     font-size: 13px;
     font-weight: bold;
 }
@@ -326,7 +337,7 @@
 }
 
 .mu-debug-badge {
-    background: #ff4757;
+    background: var(--ad-danger, #ff4757);
     color: #fff;
     padding: 6px 12px;
     border-radius: 20px;
@@ -339,14 +350,14 @@
 }
 
 .mu-debug-badge:hover {
-    background: #ff3838;
+    background: var(--ad-danger, #ff3838);
     transform: scale(1.05);
 }
 
 .mu-debug-badge .dot {
     width: 8px;
     height: 8px;
-    background: #2ed573;
+    background: var(--ad-ok, #2ed573);
     border-radius: 50%;
     animation: pulse 2s infinite;
 }
@@ -390,7 +401,7 @@
 }
 
 .mu-debug-badge {
-    background: #ff4757;
+    background: var(--ad-danger, #ff4757);
     color: #fff;
     padding: 6px 12px;
     border-radius: 20px;
@@ -403,14 +414,14 @@
 }
 
 .mu-debug-badge:hover {
-    background: #ff3838;
+    background: var(--ad-danger, #ff3838);
     transform: scale(1.05);
 }
 
 .mu-debug-badge .dot {
     width: 8px;
     height: 8px;
-    background: #2ed573;
+    background: var(--ad-ok, #2ed573);
     border-radius: 50%;
     animation: pulse 2s infinite;
 }
@@ -457,7 +468,7 @@
 .mu-debug-header .close {
     cursor: pointer;
     padding: 4px;
-    color: #999;
+    color: var(--ad-fg-faint, #999);
 }
 
 .mu-debug-header .close:hover {
@@ -467,7 +478,7 @@
 .mu-debug-header .copy {
     cursor: pointer;
     padding: 4px;
-    color: #999;
+    color: var(--ad-fg-faint, #999);
     font-size: 14px;
     user-select: none;
 }
@@ -492,7 +503,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    color: #999;
+    color: var(--ad-fg-faint, #999);
 }
 
 /* 响应式 */

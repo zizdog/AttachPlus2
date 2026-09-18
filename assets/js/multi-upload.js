@@ -6,9 +6,25 @@
 (function() {
     var config = window.MultiUploadConfig || {};
     var multiFormat = config.multiFormat === 1;
+    var securityToken = config.securityToken || '';
     
     // ===== 调试系统（仅在 debugMode=1 时启用）=====
-    var debugMode = config.debugMode === 1;
+    // 兼容 "1" / 1 两种写法；PHP 端传的是数字，但别在类型上翻车
+    var debugMode = (config.debugMode === 1 || config.debugMode === '1');
+
+    /*
+     * 保险：debugMode 关掉时，**把调试面板从 DOM 里删掉**。
+     *
+     * PHP 模板已经按 debugMode 决定要不要输出 #mu-debug-dock，但浏览器可能
+     * 还在用「打开着 debug 时生成的旧页面」（比如改设置后没刷新、或 bfcache 回退），
+     * 于是面板继续挂在那儿。这里以 config 为准，直接移除，保证「关了就不显示」。
+     */
+    if (!debugMode) {
+        var staleDock = document.getElementById('mu-debug-dock');
+        if (staleDock && staleDock.parentNode) {
+            staleDock.parentNode.removeChild(staleDock);
+        }
+    }
     var debugBody, debugPanel, debugBadge, debugClose, debugStatus, debugCount;
     var logs = [];
     var logCount = 0;
@@ -102,7 +118,7 @@
         // 路由连通性测试
         function testRoute() {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', config.ajaxUrl + '?ping=1&t=' + Date.now());
+            xhr.open('GET', config.ajaxUrl + '?ping=1&_=' + encodeURIComponent(securityToken) + '&t=' + Date.now());
             xhr.addEventListener('load', function() {
                 if (xhr.status === 200) {
                     try {
@@ -144,7 +160,7 @@
         log('info', '加载已有附件, cid=' + config.cid);
         
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', config.listUrl + '?cid=' + config.cid + '&t=' + Date.now());
+        xhr.open('GET', config.listUrl + '?cid=' + config.cid + '&_=' + encodeURIComponent(securityToken) + '&t=' + Date.now());
         xhr.addEventListener('load', function() {
             if (xhr.status !== 200) {
                 log('err', '加载已有附件失败', { status: xhr.status });
@@ -314,7 +330,7 @@
             }
             // 部分浏览器对 avif 等新格式返回空 MIME，用扩展名兜底
             var ext = (f.name.split('.').pop() || '').toLowerCase();
-            return f.type.match(/^image\//) || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].indexOf(ext) > -1;
+            return f.type.match(/^image\//) || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].indexOf(ext) > -1;
         });
         log('info', '选择文件', { total: files.length, valid: validFiles.length });
         if (validFiles.length === 0) {
@@ -402,6 +418,7 @@
         
         var formData = new FormData();
         formData.append('file', file);
+        formData.append('_', securityToken);
         if (config.cid > 0) {
             formData.append('cid', config.cid);
         }
@@ -478,7 +495,7 @@
         
         // 部分浏览器对 avif 等新格式返回空 MIME，用扩展名兜底
         var ext = (file.name.split('.').pop() || '').toLowerCase();
-        var isImage = file.type.match(/^image\//) || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg'].indexOf(ext) > -1;
+        var isImage = file.type.match(/^image\//) || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'].indexOf(ext) > -1;
         var isVideo = file.type.match(/^video\//);
         var isAudio = file.type.match(/^audio\//);
         var fileType = isImage ? 'image' : (isVideo ? 'video' : (isAudio ? 'audio' : 'other'));
@@ -635,7 +652,21 @@
         xhr.open('POST', config.attachUrl + '?do=delete');
         var formData = new FormData();
         formData.append('cid', cid);
+        formData.append('_', securityToken);
         xhr.addEventListener('load', function() {
+            var res = null;
+            try {
+                res = JSON.parse(xhr.responseText);
+            } catch (e) {
+                res = null;
+            }
+            // 服务端现在会做权限 + CSRF 校验，失败时不要误删 DOM
+            if (xhr.status !== 200 || !res || !res.success) {
+                var msg = (res && res.message) ? res.message : ('HTTP ' + xhr.status);
+                log('err', '删除附件失败', { cid: cid, message: msg });
+                alert('删除失败：' + msg);
+                return;
+            }
             el.remove();
             updateGroupVisibility();
             var idx = items.findIndex(function(i) {

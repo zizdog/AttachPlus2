@@ -12,3 +12,6 @@ fatal_debug.log
 
 # Node
 node_modules/
+
+# 轮转日志
+*.log.*

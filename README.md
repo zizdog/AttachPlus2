@@ -57,9 +57,9 @@ git clone https://github.com/zizdog/AttachPlus2.git AttachPlus2
 
 | 配置项 | 默认值 | 说明 |
 |--------|--------|------|
-| **单文件最大限制** | 10 MB | 限制单个文件的上传大小，单位为 MB |
-| **单次最大上传数量** | 20 个 | 一次上传最多允许的文件数量 |
-| **多格式附件模式** | 关闭 | 开启后支持上传所有类型文件；关闭时仅支持图片（JPG/PNG/GIF/WebP/AVIF） |
+| **单文件最大限制** | 10 MB | 限制单个文件的上传大小，单位为 MB（**服务端强制校验**） |
+| **单次最大上传数量** | 20 个 | 一次上传最多允许的文件数量（**服务端按同一用户短时间窗口强制校验**） |
+| **多格式附件模式** | 关闭 | 开启后支持上传图片、视频、音频、文档、压缩包、纯文本/JSON 等附件；关闭时仅支持图片（JPG/PNG/GIF/WebP/AVIF）。出于安全考虑，已移除 svg / html / htm / xhtml / xml / js / css / mjs 等可同源渲染类型 |
 | **调试模式** | 关闭 | 开启后，在文章编辑页右下角显示磁吸调试面板，记录上传日志 |
 
 ### 调试日志管理
@@ -132,20 +132,25 @@ git clone https://github.com/zizdog/AttachPlus2.git AttachPlus2
 
 ### 文件类型检测
 
-插件采用**双重校验**机制：
-1. **前端过滤**：根据 `multiFormat` 设置，前端 JavaScript 在上传前过滤文件类型
-2. **后端校验**：PHP 端通过 MIME 类型和扩展名白名单双重检查，确保安全性
+插件采用**服务端强校验**机制：
+
+1. **扩展名白名单**：仅允许下表中的扩展名
+2. **真实 MIME 复核**：服务端对上传的临时文件用 `finfo` / `mime_content_type` 检测真实内容类型，不再信任客户端提交的 `Content-Type`
+3. **危险类型移除**：`svg` / `html` / `htm` / `xhtml` / `xml` / `js` / `css` / `mjs` 等可在同源下被浏览器直接渲染的类型已全部移除（曾导致存储型 XSS）
+4. **大小与数量限制**：`maxSize`（MB）与 `maxFiles` 在服务端同样强制执行
 
 支持的具体格式：
 
 | 类型 | 支持格式 |
 |------|----------|
-| 图片 | jpg, jpeg, png, gif, webp, avif, svg |
+| 图片 | jpg, jpeg, png, gif, webp, avif |
 | 视频 | mp4, webm, ogv, mov |
 | 音频 | mp3, wav, ogg |
 | 文档 | pdf, doc, docx, xls, xlsx, ppt, pptx |
 | 压缩包 | zip, rar, 7z |
-| 文本 | txt, md, html, css, js, json, xml |
+| 文本 | txt, md, json |
+
+> 不安全类型（svg/html/xml/js/css 等）不再支持；如果确实需要分发 SVG，请改为上传后由主题以 `<img>` 方式引用或做内容净化后再放行。
 
 ### 新文章附件绑定机制
 
@@ -156,7 +161,7 @@ git clone https://github.com/zizdog/AttachPlus2.git AttachPlus2
 3. 插件从钩子中获取文章 `cid`，将 Session 中记录的所有附件一次性绑定到该文章
 4. 绑定完成后自动清空 Session，避免污染后续文章
 
-这一过程完全对用户透明，无需手动干预。
+若 Session 队列为空，插件还有一个**回退绑定**：仅当该用户 **10 分钟窗口内恰好存在 1 个** `parent=0` 的附件时才绑定它；存在多个候选时会跳过绑定，避免多标签页 / 多设备场景下把附件绑到错误的文章。
 
 ### 并发上传控制
 
@@ -179,8 +184,9 @@ git clone https://github.com/zizdog/AttachPlus2.git AttachPlus2
 1. **文件大小限制**：请确保 PHP 的 `upload_max_filesize` 和 `post_max_size` 配置不小于插件设置的单文件限制
 2. **权限问题**：`usr/uploads/` 目录需要具备写入权限（通常 755 或 775）
 3. **多格式模式**：关闭后不仅禁止上传非图片文件，面板上也不会显示任何非图片的已有附件
-4. **调试模式**：建议仅在排查问题时开启，调试日志会写入磁盘，长期开启可能占用空间
+4. **调试模式**：建议仅在排查问题时开启，调试日志会写入磁盘（超过 512KB 自动清空），长期开启仍可能泄露路径与文件名
 5. **浏览器兼容性**：拖拽上传和进度条需要现代浏览器支持（Chrome/Edge/Firefox/Safari 最新版本）
+6. **CSRF token**：所有 AJAX（上传 / 列表 / 删除）都会携带 Typecho 安全 token，服务端用 `hash_equals` 校验；token 失效（如登录过期）时接口返回 403，此时刷新编辑页即可
 
 ---
 
@@ -228,13 +234,31 @@ AttachPlus2/
 
 ## 版本信息
 
-- **当前版本**：2.0.1
+- **当前版本**：2.0.3
 - **适用系统**：Typecho 1.2.x / 1.1.x
 - **PHP 版本**：7.2 及以上
 - **作者**：zizdog
 - **项目地址**：https://zizdog.com
 
 ### 更新日志
+
+**2.0.3**
+- 调试面板：JS 侧在 `debugMode` 不为 `1` 时主动移除 `#mu-debug-dock`，避免旧缓存 / bfcache 回退把面板漏出来；`debugMode` 判定兼容字符串 `'1'`
+- 日志改为统一日志器（`Plugin::log()` / `logError()` / `logRegisterFatal()`）：
+  - 单行可 grep，带**毫秒 + 站点时区**（Typecho 全局时区是 UTC，直接 `date()` 会和后台差 8 小时）、`pid` 与每请求一个 `req:` 短 id
+  - 保存文章时只在**有附件要绑或出错**时写一条汇总行（`cid/uid/pending/found/bound/ms`），不再每次保存固定写三行噪音
+  - 异常记录 `类名: message @文件:行` 并附带**插件目录内**的调用栈
+  - 新增 fatal 兜底（`register_shutdown_function` + `error_get_last()`），白屏也能落盘
+  - 日志超过 512KB 改为 `rename` 成 `fatal_debug.log.1`（保留崩溃前的尾巴），不再直接清空
+
+**2.0.2（安全修复）**
+- 上传 / 列表 / 删除 / 清日志接口全部增加登录态 + 权限 + CSRF token 校验；删除与清日志仅接受 POST
+- 附件列表仅允许查看自己有权编辑的文章；`cid>0` 分支增加 LIMIT
+- 删除附件前用 `realpath()` 校验目标必须位于上传目录内，防路径穿越
+- 上传改为按临时文件检测真实 MIME，并在服务端强制 `maxSize` / `maxFiles`
+- 存储的 `title` 与核心一致地 `htmlspecialchars`；移除 svg/html/xml/js/css 等可同源渲染类型
+- 移除全局 error/exception/shutdown handler 与自建输出缓冲，改用 Typecho 响应机制
+- `attachToPost()` 日志受 `debugMode` 门控、带日期+pid、超过 512KB 自动清空；回退绑定收紧为唯一候选
 
 **2.0.1**
 - AVIF 格式正式归入图片分类：上传白名单、扩展名校验、前后端类型识别全面支持，仅图片模式下也可上传 AVIF
